@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/TomIHAU/week12/issues"
   },
-  "homepage": "https://github.com/TomIHAU/week12#readme"
+  "homepage": "https://github.com/TomIHAU/week12#readme",
+  "dependencies": {
+    "console.table": "^0.10.0"
+  }
 }

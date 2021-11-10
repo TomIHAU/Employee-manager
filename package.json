@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/TomIHAU/week12#readme",
   "dependencies": {
-    "console.table": "^0.10.0"
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.3-rc.0"
   }
 }

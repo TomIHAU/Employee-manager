@@ -127,7 +127,28 @@ const insertEmployee = (newEmployee) => {
   });
 };
 
-const addDepartment = () => {};
+const addDepartment = () => {
+  inquirer
+    .prompt([
+      {
+        name: "name",
+        message: "What is the new departments name?",
+        type: "input",
+      },
+    ])
+    .then((newDepartment) => {
+      const sql = `INSERT INTO department SET ?`;
+
+      db.query(sql, newDepartment, (err, res) => {
+        if (err) {
+          res.status(400).json({ error: err.message });
+          return;
+        }
+        console.log("New department successfully added");
+        mainMenu();
+      });
+    });
+};
 
 const mainMenu = () => {
   inquirer
@@ -183,6 +204,9 @@ const mainMenu = () => {
           break;
         case "addEmployee":
           addEmployee();
+          break;
+        case "addDepartment":
+          addDepartment();
           break;
         case "quit":
           console.log("Thanks for using my employee database manager");

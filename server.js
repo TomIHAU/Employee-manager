@@ -38,6 +38,7 @@ const showRoles = () => {
     mainMenu();
   });
 };
+
 const showEmployees = () => {
   const sql = `SELECT employee.id, employee.first_name, employee.last_name,
                 role.title AS title, department.name AS department, 
@@ -59,6 +60,120 @@ const showEmployees = () => {
     console.table(res);
     mainMenu();
   });
+};
+// const findRoles = () => {
+//   db.query(`SELECT role.id, role.title FROM role`, (err, res) => {
+//     if (err) {
+//       res.status(400).json({ error: err.message });
+//       return;
+//     }
+//     return res;
+//   });
+// };
+// const findManagers = () => {
+//   db.query(
+//     `SELECT employee.id, employee.first_name,
+//     employee.last_name FROM employee`,
+//     (err, res) => {
+//       if (err) {
+//         res.status(400).json({ error: err.message });
+//         return;
+//       }
+//       return res;
+//     }
+//   );
+// };
+const addEmployee = async () => {
+  try {
+    const roles = await db
+      .promise()
+      .query(`SELECT role.id, role.title FROM role`);
+    const managers = await db.promise().query(
+      `SELECT employee.id, employee.first_name, 
+      employee.last_name FROM employee`
+    );
+    let newManager = managers[0].map((manager) => {
+      return {
+        name: manager.first_name + " " + manager.last_name,
+        value: manager.id,
+      };
+    });
+    newManager.push({ name: "No Manager", value: null });
+
+    let newEmployee = await inquirer.prompt([
+      {
+        name: "firstName",
+        type: "input",
+        message: "What is the Employees' first name?",
+      },
+      {
+        name: "lastName",
+        type: "input",
+        message: "What is the Employees' last name?",
+      },
+      {
+        type: "list",
+        name: "role",
+        message: "What is the Employees' role?",
+        choices: roles[0].map((role) => {
+          return {
+            name: role.title,
+            value: role.id,
+          };
+        }),
+      },
+
+      {
+        type: "list",
+        name: "manager",
+        message: "Who is the Employees' manager?",
+        choices: newManager,
+      },
+    ]);
+
+    console.log(newEmployee);
+  } catch (err) {
+    console.log(err);
+  }
+  //   .then((newEmployee) => console.log(newEmployee))
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });    .push[{ name: "No manager", value: null }]
+
+  // const managers = db.query(
+  //  `SELECT employee.id, employee.first_name, employee.last_name, employee.manager_id FROM employee`
+  // );
+  // console.log(managers);
+
+  // console.log(err);
+
+  // let newEmployee = await inquirer.prompt(
+  //   {
+  //     type: "input",
+  //     name: "firstName",
+  //     message: "What is the Employees' first name?",
+  //   },
+  //   {
+  //     type: "input",
+  //     name: "lastName",
+  //     message: "What is the Employees' last name?",
+  //   },
+  //   {
+  //     type: "input",
+  //     name: "firstName",
+  //     message: "What is the Employees' first name?",
+  //   }
+  //   { employee role
+  //     type:"input",
+  //     name:"firstName",
+  //     message:"What is the Employees' first name?"
+  //   },
+  //   {manager id
+  //     type:"input",
+  //     name:"firstName",
+  //     message:"What is the Employees' first name?"
+  //   },
+  // );
 };
 
 const mainMenu = () => {
@@ -113,7 +228,15 @@ const mainMenu = () => {
         case "showEmployees":
           showEmployees();
           break;
+        case "addEmployee":
+          addEmployee();
+          break;
+        case "quit":
+          console.log("Thanks for using my employee database manager");
+          db.end();
+          break;
       }
     });
 };
+
 mainMenu();

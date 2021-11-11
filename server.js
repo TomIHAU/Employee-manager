@@ -47,9 +47,9 @@ const showEmployees = () => {
               FROM employee
               LEFT JOIN employee m 
               ON m.id = employee.manager_id
-              JOIN role
+              LEFT JOIN role
               ON employee.role_id = role.id
-              JOIN department
+              LEFT JOIN department
               ON role.department_id = department.id
               ;`;
   db.query(sql, (err, res) => {
@@ -153,7 +153,6 @@ const addDepartment = () => {
 const addRole = async () => {
   try {
     const department = await db.promise().query(`SELECT * FROM department`);
-    console.log(department[0]);
     let newRole = await inquirer.prompt([
       {
         name: "title",
@@ -195,6 +194,61 @@ const insertRole = (newRole) => {
   });
 };
 
+const updateRole = async () => {
+  try {
+    const roles = await db
+      .promise()
+      .query(`SELECT role.id, role.title FROM role`);
+    const employees = await db.promise().query(
+      `SELECT employee.id, employee.first_name,
+      employee.last_name FROM employee`
+    );
+    const updatedEmployeeRole = await inquirer.prompt([
+      {
+        type: "list",
+        name: "id",
+        message: "Which employees' role do you wish to update?",
+        choices: employees[0].map((employee) => {
+          return {
+            name: employee.first_name + " " + employee.last_name,
+            value: employee.id,
+          };
+        }),
+      },
+      {
+        type: "list",
+        name: "role_id",
+        message: "What new role does the employee have?",
+        choices: roles[0].map((role) => {
+          return {
+            name: role.title,
+            value: role.id,
+          };
+        }),
+      },
+    ]);
+    insertUpdatedRole(updatedEmployeeRole);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const insertUpdatedRole = (updatedEmployeeRole) => {
+  const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+  db.query(
+    sql,
+    [updatedEmployeeRole.role_id, updatedEmployeeRole.id],
+    (err, res) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      console.log("Employees role successfully Changed");
+      mainMenu();
+    }
+  );
+};
+
 const mainMenu = () => {
   inquirer
     .prompt({
@@ -227,7 +281,7 @@ const mainMenu = () => {
           value: "addRole",
         },
         {
-          name: "Update Role",
+          name: "Update Employees Role",
           value: "updateRole",
         },
         {
@@ -255,6 +309,9 @@ const mainMenu = () => {
           break;
         case "addRole":
           addRole();
+          break;
+        case "updateRole":
+          updateRole();
           break;
         case "quit":
           console.log("Thanks for using my employee database manager");

@@ -122,7 +122,7 @@ const insertEmployee = (newEmployee) => {
       res.status(400).json({ error: err.message });
       return;
     }
-    console.log("Employee successfully added");
+    console.log("New Employee successfully added");
     mainMenu();
   });
 };
@@ -148,6 +148,51 @@ const addDepartment = () => {
         mainMenu();
       });
     });
+};
+
+const addRole = async () => {
+  try {
+    const department = await db.promise().query(`SELECT * FROM department`);
+    console.log(department[0]);
+    let newRole = await inquirer.prompt([
+      {
+        name: "title",
+        type: "input",
+        message: "What is the Role?",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary?",
+      },
+      {
+        type: "list",
+        name: "department_id",
+        message: "What is the department is it apart of?",
+        choices: department[0].map((department) => {
+          return {
+            name: department.name,
+            value: department.id,
+          };
+        }),
+      },
+    ]);
+    insertRole(newRole);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const insertRole = (newRole) => {
+  const sql = `INSERT INTO role SET ?`;
+  db.query(sql, newRole, (err, res) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    console.log("New Role successfully added");
+    mainMenu();
+  });
 };
 
 const mainMenu = () => {
@@ -207,6 +252,9 @@ const mainMenu = () => {
           break;
         case "addDepartment":
           addDepartment();
+          break;
+        case "addRole":
+          addRole();
           break;
         case "quit":
           console.log("Thanks for using my employee database manager");

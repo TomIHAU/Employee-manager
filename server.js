@@ -249,6 +249,55 @@ const insertUpdatedRole = (updatedEmployeeRole) => {
   );
 };
 
+const updateManager = async () => {
+  try {
+    const employees = await db.promise().query(`SELECT * FROM employee`);
+    const updatedEmployeeManager = await inquirer.prompt([
+      {
+        type: "list",
+        name: "id",
+        message: "Which employees' Manager do you wish to update?",
+        choices: employees[0].map((employee) => {
+          return {
+            name: employee.first_name + " " + employee.last_name,
+            value: employee.id,
+          };
+        }),
+      },
+      {
+        type: "list",
+        name: "manager_id",
+        message: "What new manager does the employee have?",
+        choices: employees[0].map((manager) => {
+          return {
+            name: manager.first_name + " " + manager.last_name,
+            value: manager.id,
+          };
+        }),
+      },
+    ]);
+    insertUpdatedManager(updatedEmployeeManager);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const insertUpdatedManager = (updatedEmployeeManager) => {
+  const sql = `UPDATE employee SET manager_id = ? WHERE id = ?`;
+  db.query(
+    sql,
+    [updatedEmployeeManager.manager_id, updatedEmployeeManager.id],
+    (err, res) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      console.log("Employees manager successfully Changed");
+      mainMenu();
+    }
+  );
+};
+
 const mainMenu = () => {
   inquirer
     .prompt({
@@ -285,6 +334,10 @@ const mainMenu = () => {
           value: "updateRole",
         },
         {
+          name: "Update Employees Manager",
+          value: "updateManager",
+        },
+        {
           name: "Quit",
           value: "quit",
         },
@@ -312,6 +365,9 @@ const mainMenu = () => {
           break;
         case "updateRole":
           updateRole();
+          break;
+        case "updateManager":
+          updateManager();
           break;
         case "quit":
           console.log("Thanks for using my employee database manager");

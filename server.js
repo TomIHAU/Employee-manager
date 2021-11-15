@@ -252,6 +252,13 @@ const insertUpdatedRole = (updatedEmployeeRole) => {
 const updateManager = async () => {
   try {
     const employees = await db.promise().query(`SELECT * FROM employee`);
+    let newManager = employees[0].map((manager) => {
+      return {
+        name: manager.first_name + " " + manager.last_name,
+        value: manager.id,
+      };
+    });
+    newManager.push({ name: "No Manager", value: null });
     const updatedEmployeeManager = await inquirer.prompt([
       {
         type: "list",
@@ -268,12 +275,7 @@ const updateManager = async () => {
         type: "list",
         name: "manager_id",
         message: "What new manager does the employee have?",
-        choices: employees[0].map((manager) => {
-          return {
-            name: manager.first_name + " " + manager.last_name,
-            value: manager.id,
-          };
-        }),
+        choices: newManager,
       },
     ]);
     insertUpdatedManager(updatedEmployeeManager);

@@ -19,7 +19,7 @@ const showDepartments = () => {
       res.status(400).json({ error: err.message });
       return;
     }
-    console.table(res);
+    console.table("Departments", res);
     mainMenu();
   });
 };
@@ -34,7 +34,7 @@ const showRoles = () => {
       res.status(400).json({ error: err.message });
       return;
     }
-    console.table(res);
+    console.table("Roles", res);
     mainMenu();
   });
 };
@@ -57,7 +57,7 @@ const showEmployees = () => {
       res.status(400).json({ error: err.message });
       return;
     }
-    console.table(res);
+    console.table("Employees", res);
     mainMenu();
   });
 };

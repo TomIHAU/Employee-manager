@@ -9,7 +9,25 @@ A database manager using using Node.js, mysql, inquirer and console.table.
 
 ## Instructions
 
-Use mysql to create and seed the db. Then use npm to install dependencies. Then using node run server.
+**Use mysql to create the database.**
+
+mysql -u root -p
+
+**Enter your password when prompted then type:**
+
+source db/schema.sql
+
+**This will create the database**
+
+source db/seeds.sql 
+
+**This will seed the database.**
+
+**Then use npm to install dependencies.**
+
+npm i
+
+**Then using** node run server.
 
 #### demo video
 
